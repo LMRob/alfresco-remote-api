@@ -25,20 +25,21 @@
  */
 package org.alfresco.web.app.servlet;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import org.alfresco.repo.web.auth.WebCredentials;
+import org.alfresco.repo.webdav.auth.AuthenticationDriver;
+import org.alfresco.repo.webdav.auth.BaseKerberosAuthenticationFilter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.alfresco.repo.web.auth.WebCredentials;
-import org.alfresco.repo.webdav.auth.AuthenticationDriver;
-import org.alfresco.repo.webdav.auth.BaseKerberosAuthenticationFilter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Kerberos Authentication Filter Class
@@ -62,7 +63,7 @@ public class KerberosAuthenticationFilter extends BaseKerberosAuthenticationFilt
         super.init();
 
         // Use the web client user attribute name
-        setUserAttributeName(AuthenticationDriver.AUTHENTICATION_USER);
+            setUserAttributeName(AuthenticationDriver.AUTHENTICATION_USER);
     }
     
     /* (non-Javadoc)
@@ -92,21 +93,23 @@ public class KerberosAuthenticationFilter extends BaseKerberosAuthenticationFilt
     /* (non-Javadoc)
      * @see org.alfresco.repo.webdav.auth.BaseSSOAuthenticationFilter#writeLoginPageLink(javax.servlet.ServletContext, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    @Override
-    protected void writeLoginPageLink(ServletContext context, HttpServletRequest req, HttpServletResponse resp)
-            throws IOException
+    @Override protected void writeLoginPageLink(ServletContext context, HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
-        String redirectURL = req.getRequestURI();
-        resp.setContentType("text/html; charset=UTF-8");
-        resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            String redirectURL = req.getRequestURI();
+            resp.setContentType("text/html; charset=UTF-8");
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        final PrintWriter out = resp.getWriter();
-        out.println("<html><head>");
-        // Remove the auto refresh to avoid refresh loop, MNT-16931
-//         out.println("<meta http-equiv=\"Refresh\" content=\"0; url=" + redirectURL + "\">");
-        out.println("</head><body><p>Please <a href=\"" + redirectURL + "\">log in</a>.</p>");
-        out.println("</body></html>");
-        out.close();
+            final PrintWriter out = resp.getWriter();
+            out.println("<html><head>");
+            // Remove the auto refresh to avoid refresh loop, MNT-16931
+            //         out.println("<meta http-equiv=\"Refresh\" content=\"0; url=" + redirectURL + "\">");
+            // out.println("</head><body><p>Please <a href=\"" + redirectURL + "\">log in</a>.</p>");
+            // MNT-20200 (LM-190130): Sanitise url on anchor
+            out.println("</head><body>");
+            PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS).and(Sanitizers.BLOCKS);
+            out.println(policy.sanitize("<p>Please <a href=\"" + redirectURL + "\">log in</a>.</p>"));
+            out.println("</body></html>");
+            out.close();
     }
 
     /* (non-Javadoc)

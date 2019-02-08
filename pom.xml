@@ -171,6 +171,13 @@
             <version>${dependency.opencmis.version}</version>
         </dependency>
 
+	<!-- MNT-20200 OWASP Library for Security Fix -->
+	<dependency>
+	   <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+	   <artifactId>owasp-java-html-sanitizer</artifactId>
+	   <version>20181114.1</version>
+	</dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
