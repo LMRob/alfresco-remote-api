@@ -171,6 +171,13 @@
             <version>${dependency.opencmis.version}</version>
         </dependency>
 
+	<!-- MNT20199 security patch for logging neutralisation -->
+        <dependency>
+            <groupId>org.owasp.esapi</groupId>
+            <artifactId>esapi</artifactId>
+            <version>2.1.0.1</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
