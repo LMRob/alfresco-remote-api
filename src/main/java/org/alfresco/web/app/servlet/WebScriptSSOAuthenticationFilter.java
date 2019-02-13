@@ -102,8 +102,8 @@ public class WebScriptSSOAuthenticationFilter extends BaseAuthenticationFilter i
         String pathInfo = requestURI.substring((req.getContextPath() + req.getServletPath()).length());
         
         if (getLogger().isDebugEnabled())
-            getLogger().debug("Processing request: " + requestURI + " SID:" +
-                    (req.getSession(false) != null ? req.getSession().getId() : null));
+        	// MNT-20201 (LM-190213): display current session id or new one if not exist
+        	getLogger().debug("Processing request: " + requestURI + " SID:" + req.getSession().getId());
         
         Match match = container.getRegistry().findWebScript(req.getMethod(), URLDecoder.decode(pathInfo));
         if (match != null && match.getWebScript() != null)
